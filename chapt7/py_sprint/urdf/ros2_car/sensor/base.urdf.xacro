@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:include filename="$(find py_sprint)/urdf/ros2_car/common_inertia.xacro" />
+    <xacro:macro name="base_xacro" params="length radius">
+    
+        <link name="base_footprint" />
+        <joint name="base_joint" type="fixed">
+            <parent link="base_footprint" />
+            <child link="base_link" />
+            <origin xyz="0.0 0.0 ${length/2.0+0.032-0.001}" rpy="0 0 0" />
+        </joint>
+
+        <!--机器人的身体部分 -->
+        <link name = "base_link">
+
+            <!--部件的外观描述 -->
+            <visual>
+                <!-- 沿着自己几何中心的偏移和旋转量 -->
+                <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+                <!-- 几何形状-->
+                <geometry>
+                    <!-- 圆柱体 半径0.10 高度0.12-->
+                    <cylinder radius="${radius}" length="${length}"/>
+                </geometry>
+                <material name="white">
+                    <color rgba="1.0 1.0 1.0 0.5"/>
+                </material>
+                <!-- 材质颜色 --> 
+            </visual>
+
+            <collision>
+                <origin xyz="0 0 0.0" rpy="0 0 0" />
+                <geometry>
+                    <cylinder length="${length}" radius="${radius}" />
+                </geometry>
+            </collision>
+            <xacro:cylinder_inertia m="1.0" r="${radius}" h="${length}" />
+        </link>
+    </xacro:macro>
+
+    <!-- 声明 IMU 模块 -->
+    <xacro:macro name="imu_link" params="imu_name xyz">
+    <link name="${imu_name}_link">
+        <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+            <box size="0.02 0.02 0.02" />
+        </geometry>
+        </visual>
+        <material name="black">
+            <color rgba="0 0 0 0.5" />
+        </material>
+    </link>
+    <joint name="${imu_name}_joint" type="fixed">
+        <parent link="base_link" />
+        <child link="${imu_name}_link" />
+        <origin xyz="${xyz}" />
+    </joint>
+    </xacro:macro>
+</robot>
